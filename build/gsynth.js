@@ -55,7 +55,7 @@ gsynth = {};
     },
 
     _createAudioNode: function(){
-      this.node = this.context.createJavaScriptNode(1024, 1, 1);
+      this.node = this.context.createScriptProcessor(1024, 1, 1);
 
       var self = this;
 
@@ -63,7 +63,6 @@ gsynth = {};
         var data = e.outputBuffer.getChannelData(0);
 
         if(!self.instrument){ return; }
-
         for (var i = 0; i < data.length; i++) {
           data[i] = self.instrument.getSampleData();
         }
@@ -245,169 +244,6 @@ gsynth = {};
           sampleRate: this.sampleRate,
           rootNote: tuning[i]
         });
-      }    
-    }
-
-  }
-
-}(gsynth);
-!function(g){
-  /**
-   * This is the main interface
-   * for using the Flash GuitarSynth
-   *
-   * It will embed the swf using swfobject
-   * and handle calling the right methods
-   * on it.
-   *
-   * It requires that you have swfobject
-   * loaded on the page prior to instantiating
-   * an instance.
-   */
-
-  var NUM_EMBED_RETRIES = 20
-    , MS_TO_WAIT_BETWEEN_RETRIES = 30
-    , REQUIRED_FLASH_VERSION = "11";
-
-  var flashParams = {
-    objectId: 'flashGuitarSynth',
-    expressInstallUrl: '/flash/expressInstall.swf',
-    path: '/flash',
-    filename: 'GuitarSynth.swf?v=' + new Date().getTime(),
-    width: 1,
-    height: 1,
-    params: {
-      'wmode': 'window',
-      'id': 'flashGuitarSynth',
-      'name': 'flashGuitarSynth'
-    }
-  };
-
-  g.GuitarSynthFlash = function(ops){
-    ops = ops || {};
-
-    // make sure flash available:
-    if(!this.isSupported()){
-      return false;
-    }
-
-    // create the swf path using vars passed in
-    // or falling back to defaults:
-    this.swfPath = [
-      ops.flashPath || flashParams.path,
-      ops.flashFilename || flashParams.filename
-    ].join("/");
-
-    // callback when swf has been embedded:
-    this.onReadyFn = ops.onReady;
-
-    // callback when swf fails to embed:
-    this.onErrorFn = ops.onError;
-
-    this._embedSwf();
-  }
-
-  g.GuitarSynthFlash.prototype = {
-
-    turnOn: function(){
-      try {
-        this.swf.turnOn();
-      } catch(e) {
-        // console.log("error turning on swf",e);
-      }
-    },
-
-    turnOff: function(){
-      try {
-        this.swf.turnOff();
-      } catch(e) {
-        // console.log("error turning off swf",e);
-      }
-    },
-
-    playNotes: function(notes){
-      try {
-        this.swf.playNotes(notes);
-      } catch(e) {
-        // console.log("error playing notes",e);
-      }
-    },
-
-    setTuning: function(tuning){
-      try {
-        this.swf.setTuning(tuning);
-      } catch(e) {
-        // console.log("error setting tuning",e);
-      }
-    },
-
-    isSupported: function(){
-      if(!swfobject){ return false; }
-      if(!swfobject.getFlashPlayerVersion().major){ return false; }
-
-      return true;
-    },
-
-    destroy: function(){
-      this.turnOff();
-
-      if(!this.el || !this.el.parentNode){ return; }
-      this.el.parentNode.removeChild(this.el);
-      this.el = null;
-    },
-
-    _embedSwf: function(){
-      var self = this;
-
-      this.retryCount = 0;
-
-      // create a dom element on the page
-      // to embed the swf into, if it already
-      // exists, destroy it first:
-      if(this.el){ this.destroy(); }
-      this.el = document.createElement('div');
-      this.el.id = flashParams.objectId;
-      document.body.appendChild(this.el);
-
-      // be carefule, swfobject will turn the div into
-      // the flash embed object.  So this.el is useless
-      // for anything other than keeping track of whether
-      // we already previously embedded the swf.
-
-      swfobject.embedSWF(
-        this.swfPath,
-        flashParams.objectId,
-        flashParams.width,
-        flashParams.height,
-        REQUIRED_FLASH_VERSION,
-        flashParams.expressInstallUrl,
-        flashParams.params,
-        flashParams.params,
-        {},
-        function(e){
-          self._onEmbedded(e);
-        }
-      );
-    },
-
-    _onEmbedded: function(e){
-      this.el = document.getElementById(flashParams.objectId);
-      this.swf = swfobject.getObjectById(flashParams.objectId);
-
-      if(!this.swf){
-        this.retryCount++;
-
-        if(this.retryCount>NUM_EMBED_RETRIES){
-          return this.onErrorFn && this.onErrorFn();
-        }
-
-        var self = this;
-        setTimeout(function(){
-          self._onEmbedded();
-        },MS_TO_WAIT_BETWEEN_RETRIES);
-
-      } else {
-        this.onReadyFn && this.onReadyFn();
       }
     }
 
@@ -536,9 +372,6 @@ gsynth = {};
       // iOS device and the noiOS op was passed in:
       this._initWebAudio(ops);
 
-      // if we didn't try WebAudio or WebAudio isn't supported, try flash:
-      this._initFlashAudio(ops);
-
       // if we couldn't instantiate any playback method,
       // set playback to null:
       if(!this.playback.isSupported()){
@@ -561,15 +394,6 @@ gsynth = {};
 
       this.playbackMethod = 'webaudio';
       this.playback = new g.GuitarSynthWebAudio(ops);
-    },
-
-    _initFlashAudio: function(ops){
-      if(this.playback && this.playback.isSupported()){
-        return;
-      }
-
-      this.playback = new g.GuitarSynthFlash(ops);
-      this.playbackMethod = 'flash'; 
     }
   }
 

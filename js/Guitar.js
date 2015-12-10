@@ -69,7 +69,7 @@
           sampleRate: this.sampleRate,
           rootNote: tuning[i]
         });
-      }    
+      }
     }
 
   }

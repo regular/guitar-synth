@@ -59,9 +59,6 @@
       // iOS device and the noiOS op was passed in:
       this._initWebAudio(ops);
 
-      // if we didn't try WebAudio or WebAudio isn't supported, try flash:
-      this._initFlashAudio(ops);
-
       // if we couldn't instantiate any playback method,
       // set playback to null:
       if(!this.playback.isSupported()){
@@ -84,15 +81,6 @@
 
       this.playbackMethod = 'webaudio';
       this.playback = new g.GuitarSynthWebAudio(ops);
-    },
-
-    _initFlashAudio: function(ops){
-      if(this.playback && this.playback.isSupported()){
-        return;
-      }
-
-      this.playback = new g.GuitarSynthFlash(ops);
-      this.playbackMethod = 'flash'; 
     }
   }
 

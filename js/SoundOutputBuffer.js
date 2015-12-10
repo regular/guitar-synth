@@ -54,7 +54,7 @@
     },
 
     _createAudioNode: function(){
-      this.node = this.context.createJavaScriptNode(1024, 1, 1);
+      this.node = this.context.createScriptProcessor(1024, 1, 1);
 
       var self = this;
 
@@ -62,7 +62,6 @@
         var data = e.outputBuffer.getChannelData(0);
 
         if(!self.instrument){ return; }
-
         for (var i = 0; i < data.length; i++) {
           data[i] = self.instrument.getSampleData();
         }
