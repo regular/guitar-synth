@@ -6,6 +6,15 @@
   <body>
 
     <script>
+      function play(notes) {                                      
+          note = notes.shift();                                     
+          setTimeout(function() {                                   
+            guitar.playNotes([{ str: note.str, fret: note.fret }]); 
+            if (notes.length) {                                     
+              play(notes);                                          
+            }                                                       
+          }, note.duration);                                        
+        }   
       window.onload = function(){
         guitar = new gsynth.GuitarSynth();
 
@@ -17,18 +26,7 @@
           { str: 2, fret: 0, duration: 250 },                       
           { str: 1, fret: 0, duration: 250 },                       
           { str: 0, fret: 0, duration: 250 }                        
-        ];                                                          
-         
-        function play(notes) {                                      
-          note = notes.shift();                                     
-          setTimeout(function() {                                   
-            guitar.playNotes([{ str: note.str, fret: note.fret }]); 
-            if (notes.length) {                                     
-              play(notes);                                          
-            }                                                       
-          }, note.duration);                                        
-        }                                                           
-         
+        ];
         play(notes);
     </script>
   </body>
