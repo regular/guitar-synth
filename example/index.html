@@ -6,28 +6,29 @@
   <body>
 
     <script>
-      function play(notes) {                                      
-          note = notes.shift();                                     
-          setTimeout(function() {                                   
-            guitar.playNotes([{ str: note.str, fret: note.fret }]); 
-            if (notes.length) {                                     
-              play(notes);                                          
-            }                                                       
-          }, note.duration);                                        
-        }   
-      window.onload = function(){
-        guitar = new gsynth.GuitarSynth();
+function play(notes) {                                      
+  note = notes.shift();                                     
+  setTimeout(function() {                                   
+    guitar.playNotes([{ str: note.str, fret: note.fret }]); 
+    if (notes.length) {                                     
+      play(notes);                                          
+    }                                                       
+  }, note.duration);                                        
+}   
 
-        // a slowly picked E Major Chord:                           
-        var notes = [                                               
-          { str: 5, fret: 0, duration: 1000 },                      
-          { str: 4, fret: 0, duration: 250 },                       
-          { str: 3, fret: 0, duration: 250 },                       
-          { str: 2, fret: 0, duration: 250 },                       
-          { str: 1, fret: 0, duration: 250 },                       
-          { str: 0, fret: 0, duration: 250 }                        
-        ];
-        play(notes);
+window.onload = function() {
+  guitar = new gsynth.GuitarSynth();
+  // a slowly picked E Major Chord:                           
+  var notes = [                                               
+    { str: 5, fret: 0, duration: 1000 },                      
+    { str: 4, fret: 0, duration: 250 },                       
+    { str: 3, fret: 0, duration: 250 },                       
+    { str: 2, fret: 0, duration: 250 },                       
+    { str: 1, fret: 0, duration: 250 },                       
+    { str: 0, fret: 0, duration: 250 }                        
+  ];
+  play(notes);
+}
     </script>
   </body>
 </html>
